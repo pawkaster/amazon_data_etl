@@ -34,7 +34,7 @@ def get_product_info(url):
     product_info['price'] = price_element.text
 
     image_element = soup.select_one('#landingImage')
-    product_info['image_src'] = image_element.attrs.get('href')
+    product_info['image_src'] = image_element.attrs.get('src')
 
     product_info['url'] = url
 
