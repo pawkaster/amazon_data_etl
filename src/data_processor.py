@@ -9,7 +9,7 @@ def preprocess_data(data_frame):
     """
     # Drop rows with incorrect price
     price_pattern = "€[0-9]{1,5}\\.[0-9]{2}"
-    data_frame = data_frame[data_frame['price'].str.contains(price_pattern)]
+    data_frame = data_frame[data_frame['price'].str.contains(price_pattern, na=False)]
 
     # Create separate column for price and currency
     data_frame.insert(data_frame.columns.get_loc('price'), 'currency', 
@@ -22,7 +22,7 @@ def preprocess_data(data_frame):
         'rating': float,
         'currency': str,
         'price': float,
-        'image_src': str,
+        'img_src': str,
         'url': str,
     }
 

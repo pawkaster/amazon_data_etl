@@ -22,21 +22,24 @@ def get_product_info(url):
     response = requests.get(url=url, headers=custom_headers)
     soup = BeautifulSoup(response.text, 'lxml')
     product_info = {}
+    try:
+        title_element = soup.select_one('#productTitle')
+        product_info['title'] = title_element.text.strip()
 
-    title_element = soup.select_one('#productTitle')
-    product_info['title'] = title_element.text.strip()
+        rating_element = soup.select_one('#acrPopover > span > a > \
+                                        span.a-size-base')
+        product_info['rating'] = rating_element.text.strip().replace(',', '.')
 
-    rating_element = soup.select_one('#acrPopover > span > a > \
-                                     span.a-size-base')
-    product_info['rating'] = rating_element.text.strip().replace(',', '.')
+        price_element = soup.select_one('span.a-offscreen')
+        product_info['price'] = price_element.text
 
-    price_element = soup.select_one('span.a-offscreen')
-    product_info['price'] = price_element.text
+        image_element = soup.select_one('#landingImage')
+        product_info['img_src'] = image_element.attrs.get('src')
 
-    image_element = soup.select_one('#landingImage')
-    product_info['image_src'] = image_element.attrs.get('src')
-
-    product_info['url'] = url
+        product_info['url'] = url
+    except Exception as e:
+        print(e)
+        product_info = {}
 
     return product_info
 
@@ -73,7 +76,8 @@ def parse_listing(listing_url, query_size=10):
         next_page_url = next_page_element.attrs.get('href')
         next_page_url = urljoin(listing_url, next_page_url)
         print(f"Scrapping next page: {next_page_url}", flush=True)
-        page_data += parse_listing(next_page_url)
+        remaining_query_size = query_size - len(page_data)
+        page_data += parse_listing(next_page_url, remaining_query_size)
     
     return page_data
 
